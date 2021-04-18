@@ -28,6 +28,17 @@ pub enum BodyStatus {
     // Disabled,
 }
 
+#[cfg(feature = "dim3")]
+/// Represents a specific direction
+pub enum Axis {
+    /// X Axis
+    X,
+    /// Y Axis
+    Y,
+    /// Z Axis
+    Z,
+}
+
 bitflags::bitflags! {
     #[cfg_attr(feature = "serde-serialize", derive(Serialize, Deserialize))]
     /// Flags affecting the behavior of the constraints solver for a given contact manifold.
@@ -208,6 +219,16 @@ impl RigidBody {
         self.flags.contains(RigidBodyFlags::TRANSLATION_LOCKED)
     }
 
+    /// Sets whether the translation of this rigid-body is locked.
+    pub fn set_translation_locked(&mut self, lock: bool) {
+        if lock {
+            self.flags.insert(RigidBodyFlags::TRANSLATION_LOCKED);
+        } else {
+            self.flags.remove(RigidBodyFlags::TRANSLATION_LOCKED);
+        }
+        self.update_world_mass_properties();
+    }
+
     /// Are the rotations of this rigid-body locked?
     #[cfg(feature = "dim2")]
     pub fn is_rotation_locked(&self) -> bool {
@@ -222,6 +243,33 @@ impl RigidBody {
             self.flags.contains(RigidBodyFlags::ROTATION_LOCKED_Y),
             self.flags.contains(RigidBodyFlags::ROTATION_LOCKED_Z),
         ]
+    }
+
+    /// Sets whether the rotation of this rigid-body is locked.
+    #[cfg(feature = "dim2")]
+    pub fn set_rotation_locked(&mut self, lock: bool) {
+        if lock {
+            self.flags.insert(RigidBodyFlags::ROTATION_LOCKED_Z);
+        } else {
+            self.flags.remove(RigidBodyFlags::ROTATION_LOCKED_Z);
+        }
+        self.update_world_mass_properties();
+    }
+
+    /// Sets whether the rotation along a given axis of this rigid-body is locked.
+    #[cfg(feature = "dim3")]
+    pub fn set_rotation_locked(&mut self, axis: Axis, lock: bool) {
+        let flag = match axis {
+            Axis::X => RigidBodyFlags::ROTATION_LOCKED_X,
+            Axis::Y => RigidBodyFlags::ROTATION_LOCKED_Y,
+            Axis::Z => RigidBodyFlags::ROTATION_LOCKED_Z,
+        };
+        if lock {
+            self.flags.insert(flag);
+        } else {
+            self.flags.remove(flag);
+        }
+        self.update_world_mass_properties();
     }
 
     /// Enables of disable CCD (continuous collision-detection) for this rigid-body.

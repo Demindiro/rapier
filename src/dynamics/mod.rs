@@ -17,6 +17,8 @@ pub use self::joint::{
     PrismaticJoint,
     SpringModel, // GenericJoint
 };
+#[cfg(feature = "dim3")]
+pub use self::rigid_body::Axis;
 pub(crate) use self::rigid_body::RigidBodyChanges;
 pub use self::rigid_body::{ActivationStatus, BodyStatus, RigidBody, RigidBodyBuilder};
 pub use self::rigid_body_set::{BodyPair, RigidBodyHandle, RigidBodySet};
