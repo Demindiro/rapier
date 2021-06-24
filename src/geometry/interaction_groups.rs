@@ -11,7 +11,7 @@
 ///
 /// In other words, interactions are allowed between two filter iff. the following condition is met:
 /// ```ignore
-/// (self.memberships & rhs.filter) != 0 && (rhs.memberships & self.filter) != 0
+/// (self.memberships & rhs.filter) != 0 || (rhs.memberships & self.filter) != 0
 /// ```
 #[cfg_attr(feature = "serde-serialize", derive(Serialize, Deserialize))]
 #[derive(Copy, Clone, Debug, Hash, PartialEq, Eq)]
@@ -60,7 +60,7 @@ impl InteractionGroups {
     /// with the filter of `rhs`, and vice-versa.
     #[inline]
     pub const fn test(self, rhs: Self) -> bool {
-        (self.memberships & rhs.filter) != 0 && (rhs.memberships & self.filter) != 0
+        (self.memberships & rhs.filter) != 0 || (rhs.memberships & self.filter) != 0
     }
 }
 
